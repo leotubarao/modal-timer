@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Modal Timer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            height: 3000px;
+        }
+        .modal {
+            background-color: rgba(0,0,0,.5);
+            position: fixed;
+            display: none;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            flex: 1;
+            opacity: 0;
+            transition: opacity 500ms ease;
+        }
+        .modal.loading,
+        .modal.bye {
+            display: flex;
+            opacity: 0;
+        }
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal img {
+            display: block;
+            max-width: 100%;
+            margin: auto;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal">
+        <img src="img_modal.png"/>
+    </div>
+    <script>
+        (function() {
+            const nowDateModal = new Date();
+            const futureDateModal = new Date();
+
+            futureDateModal.setHours(nowDateModal.getHours() + 1);
+            
+            const futureDateModalMille = futureDateModal.getTime();
+
+            const bodyModal = document.getElementsByTagName( 'body' )[0];
+            const modal = document.querySelector( '.modal ');
+            const modalImg = modal.querySelector( 'img' );
+            const showModalClass = 'active';
+
+            const getLocalStorage = +localStorage.getItem( 'futureDateModal' );
+            
+            const argumentModal = getLocalStorage == null || getLocalStorage < nowDateModal.getTime();
+
+            if( argumentModal ) {
+                window.addEventListener( 'load', function(){
+                    modal.classList.add( 'loading' );
+                    setTimeout(function(){
+                        modal.classList.remove( 'loading' );
+                        modal.classList.add(showModalClass);
+                        bodyModal.style.overflow = 'hidden';
+                    }, 0);
+                });
+            }
+
+            modalImg.addEventListener( 'click', function(){
+                if( getLocalStorage ) {
+                    localStorage.removeItem( 'futureDateModal' );
+                }
+                bodyModal.style.overflow = 'initial';
+                setTimeout( function() {
+                    modal.classList.remove( showModalClass );
+                    modal.classList.add( 'bye' );
+                }, 0);
+                setTimeout( function() {
+                    modal.classList.remove( 'bye' );
+                }, 500);
+                localStorage.setItem( 'futureDateModal', futureDateModalMille );
+            });
+        }());
+    </script>
+</body>
+</html>
